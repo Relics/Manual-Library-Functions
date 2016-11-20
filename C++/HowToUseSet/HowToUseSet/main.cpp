@@ -37,7 +37,7 @@ int main()
     gSet.insert(s3);
     
     // Delete
-    gSet.erase(gSet.begin());
+    // gSet.erase(gSet.begin());
     
     for (auto i : gSet) {
         cout << i.name <<endl;
