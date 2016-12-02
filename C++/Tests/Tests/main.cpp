@@ -9,45 +9,38 @@ using namespace std;
 
 class Solution {
 public:
-    int wordsTyping(vector<string>& sentence, int rows, int cols) {
-        int size = (int)sentence.size();
-        if (size == 0) return 0;
+    typedef vector<int> vi;
+    
+    int dcmp(int x) {
+        return !x ? x: (x > 0 ? 1: -1);
+    }
+    
+    int cross(const vi &a, const vi &b) {
+        return a[0] * b[1] - a[1] * b[0];
+    }
+    
+    vi minus(const vi &a, const vi &b) {
+        return vi({a[0]-b[0], a[1]-b[1]});
+    }
+    
+    bool isConvex(vector<vector<int>>& p) {
         
-        // Calculate the complete len's length
-        int len = 0;
-        for (int i=0; i<size; ++i) {
-            len += (int)sentence[i].size() + 1;
-        }
+        int n = p.size();
+        //assert(n >= 3);
+        p.push_back(p[0]);
+        p.push_back(p[1]);
         
-        int ans = 0; int index = 0;
-        unordered_map<int, pair<int, int>> umap; // first - this string' index, second - <next row's beginning string's index and how many passes for this row>
-        while (rows--) {
-            if (umap.count(index)) {
-                ans += umap[index].second;
-                index = umap[index].first;
-            } else {
-                int maxCols = cols;
-                int i = index;
-                int pass = 0;
-                if ((maxCols-len)/len) {
-                    pass = (maxCols-len)/len;
-                    maxCols -= pass*len;
-                    ans += pass;
-                }
-                while (true) {
-                    if (maxCols >= (int)sentence[i].size()) {
-                        maxCols = maxCols - (int)sentence[i].size() - 1;
-                        ++i;
-                        if (i == size) {
-                            i = 0; ++pass; ++ans;
-                        }
-                    } else break;
-                }
-                umap[index].first = i; umap[index].second = pass;
-                index = i;
+        int now = dcmp(cross(minus(p[1], p[0]), minus(p[2], p[1])));
+        for (int i = 1; i < n; i++) {
+            int next = dcmp(cross(minus(p[i + 1], p[i]), minus(p[i + 2], p[i + 1])));
+            if (now * next < 0) {
+                return false;
             }
+            now = next;
         }
-        return ans;
+        
+        return true;
+        
     }
 };
 
@@ -55,8 +48,12 @@ int main()
 {
     Solution a;
     
-    vector<string> sentence = {"h"};
-    cout << a.wordsTyping(sentence, 2, 3) << endl;
+    vector<vector<int>> sentence = {{1,1},{2,1},{1,2},{-1,1},{1,-1}};
+    if (a.isConvex(sentence)) {
+        cout << "true" << endl;
+    } else {
+        cout << "false" << endl;
+    }
     
     return 0;
 }
