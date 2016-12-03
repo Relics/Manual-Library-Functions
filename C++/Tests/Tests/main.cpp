@@ -44,16 +44,26 @@ public:
     }
 };
 
+vector<string> split(string a, char delim) {
+    vector<string> v;
+    stringstream ss(a);
+    string temp;
+    while (getline(ss, temp, delim)) if (temp != "") v.push_back(temp);
+    return v;
+}
+
+
+
 int main()
 {
     Solution a;
-    
-    vector<vector<int>> sentence = {{1,1},{2,1},{1,2},{-1,1},{1,-1}};
-    if (a.isConvex(sentence)) {
-        cout << "true" << endl;
-    } else {
-        cout << "false" << endl;
+    string hehe = "/a/b/c/";
+    vector<string> ans = split(hehe, '/');
+    for (auto i : ans) {
+        cout << i << endl;
     }
+    cout <<  ans.size() << endl;
+    cout << "final" <<endl;
     
     return 0;
 }
