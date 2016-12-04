@@ -6,6 +6,14 @@ vector<string> split (string s, char delimiter) {
     return res;
 }
 
+vector<string> split (string s, char delimiter) {
+    string temp;
+    stringstream ss(s);
+    vector<string> res;
+    while (getline(ss, temp, delimiter)) if (temp != "") res.push_back(temp);
+    return res;
+}
+
 
 vector<string> split (string s, char delimiter) {
     vector<string> res;
