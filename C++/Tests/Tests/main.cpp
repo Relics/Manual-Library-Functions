@@ -7,56 +7,82 @@
 #include <unordered_set>
 using namespace std;
 
-class Solution {
-public:
-    typedef vector<int> vi;
-    
-    int dcmp(int x) {
-        return !x ? x: (x > 0 ? 1: -1);
+/*
+ * Complete the function below.
+ */
+
+class Name {
+    string firstName;
+    string romanLastName;
+    int lastName;
+    Name(string firstName, int lastName, string romanLastName) {
+        this->firstName = firstName;
+        this->lastName = lastName;
+        this->romanLastName = romanLastName;
     }
-    
-    int cross(const vi &a, const vi &b) {
-        return a[0] * b[1] - a[1] * b[0];
-    }
-    
-    vi minus(const vi &a, const vi &b) {
-        return vi({a[0]-b[0], a[1]-b[1]});
-    }
-    
-    bool isConvex(vector<vector<int>>& p) {
-        
-        int n = p.size();
-        //assert(n >= 3);
-        p.push_back(p[0]);
-        p.push_back(p[1]);
-        
-        int now = dcmp(cross(minus(p[1], p[0]), minus(p[2], p[1])));
-        for (int i = 1; i < n; i++) {
-            int next = dcmp(cross(minus(p[i + 1], p[i]), minus(p[i + 2], p[i + 1])));
-            if (now * next < 0) {
-                return false;
-            }
-            now = next;
+    const bool operator < (Name& another) const {
+        if (this->firstName != another.firstName) {
+            return this->firstName < another.firstName;
         }
-        
-        return true;
-        
+        return this->lastName < another.lastName;
     }
 };
 
-vector<string> split(string a, char delim) {
-    vector<string> v;
-    stringstream ss(a);
-    string temp;
-    while (getline(ss, temp, delim)) if (temp != "") v.push_back(temp);
-    return v;
+int romanToInteger(string s) {
+    unordered_map<char, int> umap;
+    umap['I'] = 1, umap['V'] = 5, umap['X'] = 10, umap['L'] = 50;
+    int ans = 0, size = (int)s.size();
+    for (int i=0; i<size; ++i) {
+        if (i == 0) ans += umap[s[i]];
+        else {
+            if (umap[s[i]] > umap[s[i-1]]) {
+                ans += umap[s[i]] - 2*umap[s[i-1]];
+            } else {
+                ans += umap[s[i]];
+            }
+        }
+    }
+    return ans;
 }
+
+vector <string> getSortedList(vector <string> names) {
+    vector<Name> n;
+    vector<string> ans;
+    for (string str : n) {
+        if (str == "") continue; // Empty string detect
+        int i = 0;
+        while (str[i] != ' ') ++i;
+        string first = str.substr(0, i);
+        string roman = str.substr(i+1);
+        int romanNum = romanToInteger(roman);
+        Name newOne(first, romanNum, roman);
+        n.push_back(newOne);
+    }
+    sort(n.begin(), n.end());
+    for (Name temp : names) {
+        ans.push_back(temp.firstName + " " + temp.romanLastName);
+    }
+    return ans;
+}
+
+
+
+
+
+
 
 
 
 int main()
 {
     Solution a;
+    
+    int dp[101][101] = {0};
+    for (int i = 0; i < 100; ++i){
+        for (int j=0 ; j<100; ++j)
+            cout << dp[i][j] ;
+    }
+
     string hehe = "/a/b/c/";
     vector<string> ans = split(hehe, '/');
     for (auto i : ans) {
