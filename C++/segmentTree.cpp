@@ -1,60 +1,77 @@
-struct SegmentTreeNode {
+struct Node {
     int start, end, sum;
-    SegmentTreeNode* left;
-    SegmentTreeNode* right;
-    SegmentTreeNode(int a, int b):start(a),end(b),sum(0),left(nullptr),right(nullptr){}
+    Node* left;
+    Node* right;
+    Node(int a, int b): start(a), end(b), sum(0), left(NULL), right(NULL){}
 };
+
 class NumArray {
-    SegmentTreeNode* root;
+private:
+    Node* root;
 public:
     NumArray(vector<int> &nums) {
-        int n = nums.size();
-        root = buildTree(nums,0,n-1);
+        int size = (int)nums.size();
+        root = build(nums, 0, size-1);
     }
-   
-    void update(int i, int val) {
-        modifyTree(i,val,root);
-    }
-
-    int sumRange(int i, int j) {
-        return queryTree(i, j, root);
-    }
-    SegmentTreeNode* buildTree(vector<int> &nums, int start, int end) {
-        if(start > end) return nullptr;
-        SegmentTreeNode* root = new SegmentTreeNode(start,end);
-        if(start == end) {
+    Node* build(vector<int>& nums, int start, int end) {
+        if (start > end) return NULL;
+        Node* root = new Node(start, end);
+        if (start == end) {
             root->sum = nums[start];
             return root;
+        } else {
+            int mid = start + (end-start) / 2;
+            root->left = build(nums, start, mid);
+            root->right = build(nums, mid+1, end);
+            root->sum = root->left->sum + root->right->sum;
+            return root;
         }
-        int mid = start + (end - start) / 2;
-        root->left = buildTree(nums,start,mid);
-        root->right = buildTree(nums,mid+1,end);
-        root->sum = root->left->sum + root->right->sum;
-        return root;
     }
-    int modifyTree(int i, int val, SegmentTreeNode* root) {
-        if(root == nullptr) return 0;
+    void update(int i, int val) {
+        update(i, val, root);
+    }
+    int update(int i, int val, Node* root) {
+        if (!root) return 0;
         int diff;
-        if(root->start == i && root->end == i) {
+        if (root->start == i && root->end == i) {
             diff = val - root->sum;
             root->sum = val;
             return diff;
-        }
-        int mid = (root->start + root->end) / 2;
-        if(i > mid) {
-            diff = modifyTree(i,val,root->right);
         } else {
-            diff = modifyTree(i,val,root->left);
+            int mid = root->start + (root->end - root->start) / 2;
+            if (i > mid) {
+                diff = update(i, val, root->right);
+            } else {
+                diff = update(i, val, root->left);
+            }
+            root->sum = root->sum + diff;
+            return diff;
         }
-        root->sum = root->sum + diff;
-        return diff;
     }
-    int queryTree(int i, int j, SegmentTreeNode* root) {
-        if(root == nullptr) return 0;
-        if(root->start == i && root->end == j) return root->sum;
-        int mid = (root->start + root->end) / 2;
-        if(i > mid) return queryTree(i,j,root->right);
-        if(j <= mid) return queryTree(i,j,root->left);
-        return queryTree(i,mid,root->left) + queryTree(mid+1,j,root->right);
+    
+    int sumRange(int i, int j) {
+        return sumRange(i, j, root);
+    }
+    int sumRange(int i, int j, Node* root) {
+        if (!root) return 0;
+        if (root->start == i && root->end == j) {
+            return root->sum;
+        } else {
+            int mid = root->start + (root->end - root->start) / 2;
+            if (i > mid) {
+                return sumRange(i, j, root->right);
+            } else if (j <= mid) {
+                return sumRange(i, j, root->left);
+            } else {
+                return sumRange(i, mid, root->left) + sumRange(mid+1, j, root->right);
+            }
+        }
     }
 };
+
+
+// Your NumArray object will be instantiated and called as such:
+// NumArray numArray(nums);
+// numArray.sumRange(0, 1);
+// numArray.update(1, 10);
+// numArray.sumRange(1, 2);
