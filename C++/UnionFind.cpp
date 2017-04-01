@@ -1,18 +1,12 @@
 class UnionFind{
-private:
+public:
 	vector<int> rank;
 	vector<int> pa;
-public:
-	// Construct
-	UnionFind() {
-	}
 	// Ini
-	UnionFind(vector<int> rank, vector<int> pa) {
-		this->rank = rank;
-		this->pa = pa;
-		int size = (int)rank.size();
-		for (int i=0; i<size; ++i) {
-		    pa[i] = i;
+	UnionFind(int n) {
+		for (int i = 0; i < n; ++i) {
+			rank.push_back(1);
+			pa.push_back(i);
 		}
 	}
 	// Find the root
@@ -24,7 +18,7 @@ public:
 		return i;
 	}
 	// Judge the connectivity
-	bool isConnected(int a, int b) {
+	bool isConnected(int x, int y) {
 		return root(x) == root(y);
 	}
 	// Unite the sets
