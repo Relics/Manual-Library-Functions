@@ -11,11 +11,8 @@ public:
 	}
 	// Find the root
 	int root(int i) {
-		while (i != pa[i]) {
-			pa[i] = pa[pa[i]];
-			i = pa[i];
-		}
-		return i;
+		if (i != pa[i]) pa[i] = root(pa[i]);
+		return pa[i];
 	}
 	// Judge the connectivity
 	bool isConnected(int x, int y) {
